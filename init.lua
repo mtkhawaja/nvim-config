@@ -274,6 +274,8 @@ require('lazy').setup({
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 
+-- Set  determines the number of context lines you would like to see above and below the cursor
+vim.o.scrolloff = 8
 -- Set highlight on search
 vim.o.hlsearch = false
 
