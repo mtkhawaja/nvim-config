@@ -222,7 +222,7 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'onedark',
+        theme = 'catppuccin-mocha',
         component_separators = '|',
         section_separators = '',
       },
@@ -600,8 +600,9 @@ local servers = {
   eslint = {},
 
   -- Java
-  -- NOTE: `jdtls` (Eclipse JDT) is the modern Java server. Basic LSP works as-is;
-  -- for full features (debugging, advanced refactors) add the `nvim-jdtls` plugin.
+  -- jdtls (Eclipse JDT) is kept here only so Mason installs it via ensure_installed.
+  -- It is launched/configured by nvim-jdtls in ftplugin/java.lua, not vim.lsp.enable
+  -- (it's excluded from automatic_enable below).
   jdtls = {},
 
   -- Docker
@@ -637,6 +638,9 @@ end
 require('mason').setup()
 require('mason-lspconfig').setup {
   ensure_installed = vim.tbl_keys(servers),
+  -- jdtls is launched by nvim-jdtls (see ftplugin/java.lua), so keep it out of
+  -- automatic vim.lsp.enable() to avoid two Java clients attaching to a buffer.
+  automatic_enable = { exclude = { 'jdtls' } },
 }
 
 -- [[ Configure nvim-cmp ]]
