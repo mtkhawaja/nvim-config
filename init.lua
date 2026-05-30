@@ -226,6 +226,32 @@ require('lazy').setup({
         component_separators = '|',
         section_separators = '',
       },
+      -- We override `sections` to slot in a word counter. These mirror lualine's
+      -- defaults; the only addition is the word-count component in lualine_x.
+      sections = {
+        lualine_a = { 'mode' },
+        lualine_b = { 'branch', 'diff', 'diagnostics' },
+        lualine_c = { 'filename' },
+        lualine_x = {
+          {
+            -- Word count (IntelliJ word-counter equivalent). Shows the visual
+            -- selection's word count when selecting, otherwise the whole buffer.
+            function()
+              local wc = vim.fn.wordcount()
+              return (wc.visual_words or wc.words) .. ' words'
+            end,
+            -- Only show for prose-y filetypes; remove `cond` to show everywhere.
+            cond = function()
+              return vim.tbl_contains({ 'markdown', 'text', 'tex', 'asciidoc', 'rst', 'org', 'gitcommit' }, vim.bo.filetype)
+            end,
+          },
+          'encoding',
+          'fileformat',
+          'filetype',
+        },
+        lualine_y = { 'progress' },
+        lualine_z = { 'location' },
+      },
     },
   },
 
@@ -305,6 +331,13 @@ vim.o.mouse = 'a'
 --  Insert space characters whenever the tab key is pressed,
 vim.o.expandtab = true
 vim.o.tabstop = 4
+
+-- Show whitespace characters (IntelliJ "Show whitespaces" equivalent).
+--  `lead`  = leading/indentation spaces, `trail` = trailing spaces,
+--  `tab`   = tab characters, `nbsp` = non-breaking spaces.
+--  Add `space = '·'` to also dot EVERY inner space (full IntelliJ parity, but noisy).
+vim.o.list = true
+vim.opt.listchars = { tab = '→ ', trail = '·', nbsp = '␣', lead = '·' }
 
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
@@ -694,6 +727,10 @@ cmp.setup {
     { name = 'path' },
   },
 }
+
+-- Method separators: draw a line above each function (IntelliJ-style).
+--  See lua/custom/method_separators.lua.
+require('custom.method_separators').setup()
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
