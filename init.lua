@@ -44,6 +44,10 @@ P.S. You can delete this when you're done too. It's your config now :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- Set to true once you've installed a Nerd Font and pointed your terminal at it.
+-- Plugins below use this to decide whether to show glyph icons or plain-text fallbacks.
+vim.g.have_nerd_font = false
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
@@ -202,11 +206,12 @@ require('lazy').setup({
   },
 
   {
-    -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
+    -- Catppuccin colorscheme (restores commit 0e9964d, which the origin/master merge reverted)
+    'catppuccin/nvim',
+    name = 'catppuccin',
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme 'onedark'
+      vim.cmd.colorscheme 'catppuccin-mocha'
     end,
   },
 
@@ -281,7 +286,7 @@ require('lazy').setup({
   --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {})
 
 -- [[ Setting options ]]
@@ -446,7 +451,7 @@ vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = 
 -- The `main` branch dropped the old `nvim-treesitter.configs.setup{}` entrypoint.
 -- Parsers are now installed via `require('nvim-treesitter').install{}`, and highlighting
 -- / indentation are enabled per-buffer using Neovim's built-in treesitter integration.
-local ts_ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash' }
+local ts_ensure_installed = { 'bash', 'css', 'go', 'html', 'java', 'javascript', 'json', 'lua', 'markdown', 'markdown_inline', 'python', 'tsx', 'typescript', 'vim', 'vimdoc' }
 
 -- Install any of the parsers above that are missing (idempotent, async).
 require('nvim-treesitter').install(ts_ensure_installed)
@@ -548,6 +553,7 @@ end
 -- NOTE: which-key v3 replaced `.register{ ['<leader>x'] = { name = ... } }`
 -- with the `.add{ { '<leader>x', group = ... } }` spec used below.
 require('which-key').add {
+  { '<leader>b', group = '[B]uffer' },
   { '<leader>c', group = '[C]ode' },
   { '<leader>d', group = '[D]ocument' },
   { '<leader>g', group = '[G]it' },
@@ -567,25 +573,7 @@ require('which-key').add {
 --  server via `vim.lsp.config()` (Neovim 0.11+ native LSP) -- e.g. `settings`, `filetypes`, etc.
 --  You must look up the relevant server documentation yourself for `settings`.
 local servers = {
-  -- clangd = {},
-  gopls = {},
-  pyright = {},
-  -- rust_analyzer = {},
-  ts_ls = {}, -- `tsserver` was renamed to `ts_ls` in nvim-lspconfig
-  html = { filetypes = { 'html', 'twig', 'hbs' } },
-  ansiblels = {},
-  bashls = {},
-  cssls = {},
-  dockerls = {},
-  docker_compose_language_service = {},
-  eslint = {},
-  jsonls = {},
-  java_language_server = {},
-  marksman = {},
-  sqlls = {},
-  taplo = {},
-  terraformls = {},
-  lemminx = {},
+  -- Core: editing this config, shell scripts, JSON
   lua_ls = {
     settings = {
       Lua = {
@@ -596,6 +584,35 @@ local servers = {
       },
     },
   },
+  bashls = {},
+  jsonls = {},
+
+  -- Go
+  gopls = {},
+
+  -- Python
+  pyright = {},
+
+  -- Web (TypeScript / JavaScript / HTML / CSS)
+  ts_ls = {}, -- `tsserver` was renamed to `ts_ls` in nvim-lspconfig
+  html = { filetypes = { 'html', 'twig', 'hbs' } },
+  cssls = {},
+  eslint = {},
+
+  -- Java
+  -- NOTE: `jdtls` (Eclipse JDT) is the modern Java server. Basic LSP works as-is;
+  -- for full features (debugging, advanced refactors) add the `nvim-jdtls` plugin.
+  jdtls = {},
+
+  -- Docker
+  dockerls = {},
+  docker_compose_language_service = {},
+
+  -- Docs / data
+  marksman = {}, -- Markdown
+  sqlls = {}, -- SQL
+  taplo = {}, -- TOML
+  lemminx = {}, -- XML
 }
 
 -- Neovim Lua development (config + plugins) is handled by `lazydev.nvim`, configured in the
