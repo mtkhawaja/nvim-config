@@ -1,8 +1,25 @@
 -- nvim-treesitter (main branch): installs parsers; highlighting/indent use Neovim's built-in treesitter.
 -- Parsers are compiled locally and need the `tree-sitter` CLI and a C compiler on PATH.
 local parsers = {
-  'bash', 'css', 'dockerfile', 'go', 'html', 'java', 'javascript', 'json', 'lua', 'markdown', 'markdown_inline',
-  'python', 'toml', 'tsx', 'typescript', 'vim', 'vimdoc', 'xml', 'yaml',
+  'bash',
+  'css',
+  'dockerfile',
+  'go',
+  'html',
+  'java',
+  'javascript',
+  'json',
+  'lua',
+  'markdown',
+  'markdown_inline',
+  'python',
+  'toml',
+  'tsx',
+  'typescript',
+  'vim',
+  'vimdoc',
+  'xml',
+  'yaml',
 }
 
 if vim.fn.executable 'tree-sitter' == 1 then
@@ -28,7 +45,14 @@ local select = require 'nvim-treesitter-textobjects.select'
 local move = require 'nvim-treesitter-textobjects.move'
 local swap = require 'nvim-treesitter-textobjects.swap'
 
-for lhs, query in pairs { aa = '@parameter.outer', ia = '@parameter.inner', af = '@function.outer', ['if'] = '@function.inner', ac = '@class.outer', ic = '@class.inner' } do
+for lhs, query in pairs {
+  aa = '@parameter.outer',
+  ia = '@parameter.inner',
+  af = '@function.outer',
+  ['if'] = '@function.inner',
+  ac = '@class.outer',
+  ic = '@class.inner',
+} do
   vim.keymap.set({ 'x', 'o' }, lhs, function()
     select.select_textobject(query, 'textobjects')
   end, { desc = 'Select ' .. query })
